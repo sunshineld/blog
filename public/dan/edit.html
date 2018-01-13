@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>后台管理系统</title>
+		<link href="images/index.css" type="text/css" rel="stylesheet"/>
+		<script src="images/jquery.js"></script>
+		<script src="/checklogin.html"></script>
+	</head>
+	<body>
+		<header>
+			<h1>网站后台管理系统</h1>
+			<p>
+				<a href="index.html"><span class="icon home"></span>系统首页</a>
+				<a href="/checkout.html"><span class="icon quit"></span>安全退出</a>
+			</p>
+		</header>
+		<section>
+			<!-- 导航 -->
+			<script src="./menu.js"></script>
+			<div class="mainbox">
+
+				<div class="note">
+					<h4>编辑新闻</h4>
+					<form action="" method="post">
+						<table class="news_form">
+							<tr>
+								<td>新闻标题：</td>
+								<td><input type="text" name="title" class="inbox" id="title"/></td>
+							</tr>
+							<tr>
+								<td>新闻分类：</td>
+								<td>
+									<select class="inbox" id="classify">
+										<option>请选择分类</option>
+										<option>html/css</option>
+										<option>html5/css3</option>
+										<option>javascript</option>
+										<option>nodejs</option>
+										<option>life</option>
+										<option>word</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td>作　　者：</td>
+								<td><input type="text" name="author" class="inbox" id="author"/></td>
+							</tr>
+							<tr>
+								<td>日　　期：</td>
+								<td><input type="text" name="time" class="inbox" id="time"/></td>
+							</tr>
+							<tr>
+								<td>摘　　要：</td>
+								<td><input type="text" name="summary" class="inbox" id="summary"/></td>
+							</tr>
+							<tr>
+								<td>新闻内容：</td>
+								<td>
+									<!-- 加载编辑器的容器 -->
+									<script id="content" name="content" type="text/plain">  
+										
+								   </script>
+								   <!-- 配置文件 -->
+								   <script type="text/javascript" src="../ueditor/ueditor.config.js"></script>
+								   <!-- 编辑器源码文件 -->
+								   <script type="text/javascript" src="../ueditor/ueditor.all.js"></script>
+								   <!-- 实例化编辑器 -->
+								   <script type="text/javascript">  
+									   var ue = UE.getEditor('content'); 
+								   </script>
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><input type="button" value="确定" id="btn1"/>&emsp;<input type="button" value="取消" id="btn2"/></td>
+							</tr>
+						</table>
+					</form>
+				</div>
+			</div>
+		</section>
+		<script>
+			var url = location.href;
+			var u = url.split("=");
+			var id = u[1];
+			
+			ue.ready(function() {
+				$.get("/getlist.html?id="+id,function(data){
+					 $("#title").val(data.title);
+					 $("#classify").val(data.classify);
+					 console.log(data.classify);
+					 $("#author").val(data.author);
+					 $("#summary").val(data.summary);
+					 ue.setContent(data.content);
+					 $("#time").val(data.time);
+				})
+			});
+			$("#btn1").on("click",function(){
+				var title = $("#title").val();
+				var classify = $("#classify").val();
+				var author = $("#author").val();
+				var summary = $("#summary").val();
+				var content = ue.getContent();
+				var time = $("#time").val();
+				$.post("/save_article.html",{
+					"title":title,
+					"classify":classify,
+					"author":author,
+					"summary":summary,
+					"content":content,
+					"time":time,
+					"id":id
+				},function(data){
+					if(data == "1"){
+						location.href = "list.html";
+					}
+				});
+			})
+			$("#btn2").on("click",function(){
+				location.href = "list.html";
+			})
+		</script>
+	</body>
+</html>
